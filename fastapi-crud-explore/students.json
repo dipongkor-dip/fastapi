@@ -1,0 +1,145 @@
+{
+    "S001": {
+        "name": "Alice Smith",
+        "roll": "101",
+        "class": "10th Grade",
+        "marks": {
+            "Math": 85,
+            "Science": 90,
+            "English": 88
+        },
+        "phone": "+1-555-0192",
+        "age": 15
+    },
+    "S002": {
+        "name": "Bob Jones",
+        "roll": "102",
+        "class": "10th Grade",
+        "marks": {
+            "Math": 78,
+            "Science": 82,
+            "English": 75
+        },
+        "phone": "+1-555-0143",
+        "age": 16
+    },
+    "S003": {
+        "name": "Charlie Brown",
+        "roll": "103",
+        "class": "10th Grade",
+        "marks": {
+            "Math": 92,
+            "Science": 95,
+            "English": 89
+        },
+        "phone": "+1-555-0187",
+        "age": 18
+    },
+    "S004": {
+        "name": "Diana Prince",
+        "roll": "104",
+        "class": "10th Grade",
+        "marks": {
+            "Math": 95,
+            "Science": 98,
+            "English": 94
+        },
+        "phone": "+1-555-0164",
+        "age": 17
+    },
+    "S005": {
+        "name": "Evan Wright",
+        "roll": "105",
+        "class": "10th Grade",
+        "marks": {
+            "Math": 70,
+            "Science": 65,
+            "English": 72
+        },
+        "phone": "+1-555-0129",
+        "age": 19
+    },
+    "S006": {
+        "name": "Fiona Gallagher",
+        "roll": "106",
+        "class": "10th Grade",
+        "marks": {
+            "Math": 88,
+            "Science": 84,
+            "English": 91
+        },
+        "phone": "+1-555-0111",
+        "age": 14
+    },
+    "S007": {
+        "name": "George Clark",
+        "roll": "107",
+        "class": "10th Grade",
+        "marks": {
+            "Math": 76,
+            "Science": 79,
+            "English": 80
+        },
+        "phone": "+1-555-0155",
+        "age": 12
+    },
+    "S008": {
+        "name": "Hannah Abbott",
+        "roll": "108",
+        "class": "10th Grade",
+        "marks": {
+            "Math": 91,
+            "Science": 88,
+            "English": 93
+        },
+        "phone": "+1-555-0178",
+        "age": 13
+    },
+    "S009": {
+        "name": "Ian Malcolm",
+        "roll": "109",
+        "class": "10th Grade",
+        "marks": {
+            "Math": 82,
+            "Science": 91,
+            "English": 77
+        },
+        "phone": "+1-555-0133",
+        "age": 16
+    },
+    "S010": {
+        "name": "Julia Roberts",
+        "roll": "110",
+        "class": "10th Grade",
+        "marks": {
+            "Math": 94,
+            "Science": 96,
+            "English": 95
+        },
+        "phone": "+1-555-0199",
+        "age": 15
+    },
+    "S011": {
+        "id": "S011",
+        "name": "alo",
+        "age": 18,
+        "roll": 23
+    },
+    "S012": {
+        "id": "S012",
+        "name": "sunny",
+        "age": 18,
+        "marks": {
+            "Math": 88
+        },
+        "roll": 23
+    },
+    "S013": {
+        "name": "sunny",
+        "age": 18,
+        "marks": {
+            "Math": 88
+        },
+        "roll": 23
+    }
+}
