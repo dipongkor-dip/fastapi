@@ -1,1 +1,8 @@
-text.py
+# python -m venv myenv
+# source myenv/bin/activate
+# deactivate
+
+myenv
+
+# pip install fastapi uvicorn pydantic
+# uvicorn main:app --reload
