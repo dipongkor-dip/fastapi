@@ -4,7 +4,7 @@
 
 myenv
 
-# pip install fastapi uvicorn pydantic
+# pip install fastapi uvicorn pydantic sqlalchemy passlib "bcrypt==4.0.1"
 # uvicorn main:app --reload
 
 .venv
