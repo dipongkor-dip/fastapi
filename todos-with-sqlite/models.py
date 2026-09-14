@@ -24,3 +24,4 @@ class Users(Base):
     isActive = Column(Boolean, default=True)
     role = Column(String)
     password = Column(String)
+    phone = Column(String)
