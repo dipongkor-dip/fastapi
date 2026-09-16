@@ -2,9 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-# DATABASE_URL = "sqlite:///./sqlite_todos_db.db"
+DATABASE_URL = "sqlite:///./sqlite_todos_db.db"
 # DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/todos"
-DATABASE_URL = "mysql+pymysql://root:mysql@localhost:3306/todos"
+# DATABASE_URL = "mysql+pymysql://root:mysql@localhost:3306/todos"
 
 # engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 engine = create_engine(DATABASE_URL)

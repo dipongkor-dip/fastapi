@@ -147,12 +147,3 @@ def delete_todo(
     db.commit()
 
     return JSONResponse({"message": "deleted successfully"}, 200)
-
-
-@app.get("/me")
-def get_profile(user: user_dependency, db: db_dependency):
-    if user is None:
-        raise HTTPException(401, "Unauthorized user")
-
-    u = db.query(Users).filter(Users.id == user.get("id")).first()
-    return u

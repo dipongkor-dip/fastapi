@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from router.auth import decode_access_token
 from models import Users, Todos
 from fastapi.responses import JSONResponse
+from router.auth import UserResponse
 
 router = APIRouter()
 
@@ -21,7 +22,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[dict, Depends(decode_access_token)]
 
 
-@router.get("/admin/users")
+@router.get("/admin/users", response_model=list[UserResponse])
 def get_users(user: user_dependency, db: db_dependency):
     if user is None or user.get("role") != "admin":
         raise HTTPException(401, "Authentication Failed")

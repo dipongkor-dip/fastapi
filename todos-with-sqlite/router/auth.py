@@ -112,6 +112,30 @@ def login_user(
     return {"access_token": token, "token_type": "Bearer"}
 
 
+class UserResponse(BaseModel):
+    id: int
+    email: str
+    username: str
+    firstname: str | None = None
+    lastname: str | None = None
+    isActive: bool
+    role: str | None = None
+    phone: str | None = None
+
+    class Config:
+        from_attributes = True  # Allows reading data directly from SQLAlchemy models
+
+
+@router.get("/me", response_model=UserResponse)
+def get_profile(user: user_dependency, db: db_dependency):
+    if user is None:
+        raise HTTPException(401, "Unauthorized user")
+
+    u = db.query(Users).filter(Users.id == user.get("id")).first()
+
+    return u
+
+
 class UpdateUser(BaseModel):
     username: Optional[str] = Field(default=None)
     firstname: Optional[str] = Field(default=None)

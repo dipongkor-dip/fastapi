@@ -1,8 +1,8 @@
-"""phone column adding or users table
+"""add phone of users table
 
-Revision ID: 35a262aa0f98
-Revises:
-Create Date: 2026-09-14 21:59:03.959401
+Revision ID: d15e04d30ad7
+Revises: f125e03b3280
+Create Date: 2026-09-16 19:39:13.451370
 
 """
 
@@ -12,8 +12,8 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-revision: str = "35a262aa0f98"
-down_revision: Union[str, Sequence[str], None] = None
+revision: str = "d15e04d30ad7"
+down_revision: Union[str, Sequence[str], None] = "f125e03b3280"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
