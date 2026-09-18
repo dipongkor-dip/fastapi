@@ -17,4 +17,4 @@ def get_db():
 
 @app.get("/")
 def start():
-    return "Running Transaction Server"
+    return "Running Tracker Server"
