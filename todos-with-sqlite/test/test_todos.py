@@ -53,7 +53,7 @@ def test_get_todo():
 
 def test_create_todo():
     db = SessionLocal()
-    todo = db.query(Todos).filter(Todos.user_id == 1).order_by(Todos.id.asc()).first()
+    todo = db.query(Todos).filter(Todos.user_id == 1).order_by(Todos.id.desc()).first()
 
     if todo is not None:
         db.query(Todos).filter(Todos.id == todo.id).delete()

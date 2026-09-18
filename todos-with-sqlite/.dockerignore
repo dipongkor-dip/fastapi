@@ -1,0 +1,20 @@
+# Git files
+.git
+.gitignore
+
+# Python virtual environment and caches
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Environment variables (Keep out of the image for security; 
+# your compose.yaml handles loading .env at runtime)
+.env
+
+# IDE and OS-specific files
+.vscode/
+.idea/
+.DS_Store
+*.log
