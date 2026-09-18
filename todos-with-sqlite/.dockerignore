@@ -18,3 +18,6 @@ __pycache__/
 .idea/
 .DS_Store
 *.log
+
+# run this project with docker (under a folder with .env file)
+# docker run --env-file .env -p 8000:8000 dipongkorroy000/fastapi-todos-app:latest
