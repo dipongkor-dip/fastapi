@@ -165,7 +165,7 @@ class UpdatePassword(BaseModel):
     new_password: str
 
 
-@router.put("/users/pass")
+@router.put("/change-password")
 def update_password(user: user_dependency, db: db_dependency, payload: UpdatePassword):
     if user is None:
         raise HTTPException(401, "Unauthorized user")

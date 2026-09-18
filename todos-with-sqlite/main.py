@@ -85,10 +85,10 @@ def create_todo(user: user_dependency, db: db_dependency, new_todo: Todo):
 
 
 class TodoUpdate(BaseModel):
-    title: Optional[str]
+    title: Optional[str] = None
     description: Optional[str] = Field(default=None, max_length=100)
     priority: Optional[int] = Field(default=None, gt=0, le=5)
-    completed: Optional[bool]
+    completed: Optional[bool] = None
 
 
 @app.put("/todos/{id}")
