@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from pydantic import BaseModel, Field, ConfigDict
 from database import SessionLocal
 from typing import Annotated, Literal, Optional, List
@@ -47,12 +47,14 @@ class TransactionWithResponse(BaseModel):
     transaction: TransactionResponse
 
 
-@router.post("", status_code=201, response_model=TransactionWithResponse)
+@router.post(
+    "", status_code=status.HTTP_201_CREATED, response_model=TransactionWithResponse
+)
 def create_transaction(
     user: user_dependency, db: db_dependency, payload: CreateTransaction
 ):
     if user is None:
-        raise HTTPException(401, "Unauthorized user")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Unauthorized user")
 
     transaction_model = Transaction(
         **payload.model_dump(), user_id=user.get("id"), date=date.today()
@@ -72,24 +74,26 @@ class TransactionListResponse(BaseModel):
     transactions: List[TransactionResponse]
 
 
-@router.get("", status_code=200, response_model=TransactionListResponse)
+@router.get("", status_code=status.HTTP_200_OK, response_model=TransactionListResponse)
 def my_transactions(user: user_dependency, db: db_dependency):
     if user is None:
-        raise HTTPException(401, "Unauthorized user")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Unauthorized user")
 
     data = db.query(Transaction).filter(Transaction.user_id == user.get("id")).all()
 
     return {"message": "Transactions retrieved successfully", "transactions": data}
 
 
-@router.get("/{id}", status_code=200, response_model=TransactionWithResponse)
+@router.get(
+    "/{id}", status_code=status.HTTP_200_OK, response_model=TransactionWithResponse
+)
 def get_transaction(
     user: user_dependency,
     db: db_dependency,
     id: int = Path(description="id of transactions", example=1),
 ):
     if user is None:
-        raise HTTPException(401, "Unauthorized user")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Unauthorized user")
 
     data = (
         db.query(Transaction)
@@ -98,7 +102,7 @@ def get_transaction(
         .first()
     )
     if data is None:
-        raise HTTPException(404, "Not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Not found")
 
     return {"message": "Transaction retrieved successfully", "transaction": data}
 
@@ -108,11 +112,13 @@ class UpdateTransaction(BaseModel):
     amount: float = Field(
         default=None, gt=0, description="Amount must be greater than zero"
     )
-    type: Literal["income", "expense"]
+    type: Literal["income", "expense"] = None
     category: Optional[str] = None
 
 
-@router.put("/{id}", status_code=200, response_model=TransactionWithResponse)
+@router.put(
+    "/{id}", status_code=status.HTTP_200_OK, response_model=TransactionWithResponse
+)
 def update_transaction(
     user: user_dependency,
     db: db_dependency,
@@ -120,7 +126,7 @@ def update_transaction(
     id: int = Path(description="id of transactions", example=1),
 ):
     if user is None:
-        raise HTTPException(401, "Unauthorized user")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Unauthorized user")
 
     data = (
         db.query(Transaction)
@@ -130,7 +136,7 @@ def update_transaction(
     )
 
     if data is None:
-        raise HTTPException(404, "Not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Not found")
 
     update_data = payload.model_dump(exclude_unset=True)
 
@@ -153,7 +159,7 @@ def delete_transaction(
     id: int = Path(description="id of transactions", example=1),
 ):
     if user is None:
-        raise HTTPException(401, "Unauthorized user")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Unauthorized user")
 
     data = (
         db.query(Transaction)
@@ -163,7 +169,7 @@ def delete_transaction(
     )
 
     if data is None:
-        raise HTTPException(404, "Not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Not found")
 
     db.query(Transaction).filter(Transaction.user_id == user.get("id")).filter(
         Transaction.id == id
@@ -171,13 +177,13 @@ def delete_transaction(
 
     db.commit()
 
-    return JSONResponse({"message": "deleted successfully"}, 200)
+    return JSONResponse({"message": "deleted successfully"}, status.HTTP_200_OK)
 
 
 from typing import Optional, Literal
 
 
-@router.get("/filter", status_code=200, response_model=TransactionListResponse)
+@router.get("/filter", status_code=status.HTTP_200_OK, response_model=TransactionListResponse)
 def get_transactions(
     user: user_dependency,
     db: db_dependency,
@@ -187,9 +193,13 @@ def get_transactions(
     maximum_amount: Optional[float] = None,
 ):
     if user is None:
-        raise HTTPException(401, "Unauthorized user")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Unauthorized user")
 
-    query = db.query(Transaction).filter(Transaction.user_id == user.get("id")).order_by(Transaction.date.desc())
+    query = (
+        db.query(Transaction)
+        .filter(Transaction.user_id == user.get("id"))
+        .order_by(Transaction.date.desc())
+    )
 
     # Conditionally apply filters
     if type is not None:

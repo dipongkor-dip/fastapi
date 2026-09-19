@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from models import User
 from database import SessionLocal
@@ -54,11 +54,11 @@ def decode_access_token(token: Annotated[str, Depends(OAuth2_bearer)]):
         user_id: int = payload.get("id")
 
         if username is None or user_id is None:
-            raise HTTPException(status_code=404, detail="Unauthorized user")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized user")
 
         return {"username": username, "id": user_id}
     except:
-        raise HTTPException(status_code=404, detail="Unauthorized user")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized user")
 
 
 class CreateUser(BaseModel):
@@ -78,7 +78,7 @@ def create_user(db: db_dependency, new_user: CreateUser):
     db.add(user_model)
     db.commit()
 
-    return JSONResponse({"message": "User created successfully"}, 201)
+    return JSONResponse({"message": "User created successfully"}, status.HTTP_201_CREATED)
 
 
 @router.post("/login")
