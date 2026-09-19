@@ -85,6 +85,45 @@ def my_transactions(user: user_dependency, db: db_dependency):
 
 
 @router.get(
+    "/filter", status_code=status.HTTP_200_OK, response_model=TransactionListResponse
+)
+def get_transactions(
+    user: user_dependency,
+    db: db_dependency,
+    type: Optional[Literal["income", "expense"]] = None,
+    category: Optional[str] = None,
+    minimum_amount: Optional[float] = None,
+    maximum_amount: Optional[float] = None,
+):
+    if user is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Unauthorized user")
+
+    query = (
+        db.query(Transaction)
+        .filter(Transaction.user_id == user.get("id"))
+        .order_by(Transaction.date.desc())
+    )
+
+    # Conditionally apply filters
+    if type is not None:
+        query = query.filter(Transaction.type == type)
+
+    if category is not None:
+        query = query.filter(Transaction.category == category)
+
+    if minimum_amount is not None:
+        query = query.filter(Transaction.amount >= minimum_amount)
+
+    if maximum_amount is not None:
+        query = query.filter(Transaction.amount <= maximum_amount)
+
+    # Execute query
+    data = query.all()
+
+    return {"message": "Transactions retrieved successfully", "transactions": data}
+
+
+@router.get(
     "/{id}", status_code=status.HTTP_200_OK, response_model=TransactionWithResponse
 )
 def get_transaction(
@@ -178,43 +217,3 @@ def delete_transaction(
     db.commit()
 
     return JSONResponse({"message": "deleted successfully"}, status.HTTP_200_OK)
-
-
-from typing import Optional, Literal
-
-
-@router.get("/filter", status_code=status.HTTP_200_OK, response_model=TransactionListResponse)
-def get_transactions(
-    user: user_dependency,
-    db: db_dependency,
-    type: Optional[Literal["income", "expense"]] = None,
-    category: Optional[str] = None,
-    minimum_amount: Optional[float] = None,
-    maximum_amount: Optional[float] = None,
-):
-    if user is None:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Unauthorized user")
-
-    query = (
-        db.query(Transaction)
-        .filter(Transaction.user_id == user.get("id"))
-        .order_by(Transaction.date.desc())
-    )
-
-    # Conditionally apply filters
-    if type is not None:
-        query = query.filter(Transaction.type == type)
-
-    if category is not None:
-        query = query.filter(Transaction.category == category)
-
-    if minimum_amount is not None:
-        query = query.filter(Transaction.amount >= minimum_amount)
-
-    if maximum_amount is not None:
-        query = query.filter(Transaction.amount <= maximum_amount)
-
-    # Execute query
-    data = query.all()
-
-    return {"message": "Transactions retrieved successfully", "transactions": data}
