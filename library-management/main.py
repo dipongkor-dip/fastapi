@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException, Path, status
 import models
 from database import engine, SessionLocal
-from typing import Annotated, Optional
+from typing import Annotated
 from sqlalchemy.orm import Session
-from models import Books, Reservations
+from models import Books, Reservations, IssueRecords
 from router import admin, auth
 from router.auth import decode_access_token
 from fastapi.responses import JSONResponse
@@ -12,7 +12,7 @@ app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
 app.include_router(auth.router, tags=["Users"])
-# app.include_router(admin.router)
+app.include_router(admin.router, tags=["Admin"])
 
 
 def get_db():
@@ -122,3 +122,20 @@ def my_reservation(
     )
 
     return reservations
+
+
+@app.get("/issue")
+def my_issued_books(
+    user: user_dependency,
+    db: db_dependency,
+):
+    if user is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Unauthorized user")
+
+    issues = (
+        db.query(IssueRecords)
+        .filter(IssueRecords.user_id == user.get("id"), IssueRecords.status == "issued")
+        .all()
+    )
+
+    return issues
