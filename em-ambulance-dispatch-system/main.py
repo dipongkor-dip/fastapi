@@ -14,6 +14,7 @@ from router import (
     payments,
 )
 from utils.bootstrap import create_default_superadmin
+from fastapi.middleware.cors import CORSMiddleware
 
 
 @asynccontextmanager
@@ -26,6 +27,16 @@ app = FastAPI(
     title="Ambulance Management System",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+origins = ["http://localhost:5173"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 models.Base.metadata.create_all(bind=engine)
