@@ -15,7 +15,7 @@ from router import (
 )
 from utils.bootstrap import create_default_superadmin
 from fastapi.middleware.cors import CORSMiddleware
-
+from config import settings
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -29,7 +29,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-origins = ["http://localhost:5173"]
+origins = ["http://localhost:5173", settings.frontend_url]
 
 app.add_middleware(
     CORSMiddleware,

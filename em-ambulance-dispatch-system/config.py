@@ -25,6 +25,7 @@ class Settings(BaseSettings):
 
     # Application
     backend_url: str
+    frontend_url: str
 
     # Cloudinary
     cloudinary_cloud_name: str
