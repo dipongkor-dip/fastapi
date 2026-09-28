@@ -22,11 +22,15 @@ class TokenResponse(BaseModel):
     token_type: str
 
 
+class OAuthCodeExchange(BaseModel):
+    code: str
+
+
 # ========================= # USER # =========================
 class UserResponse(BaseModel):
     id: int
     username: str
-    email: str
+    email: EmailStr | None
     firstname: str
     lastname: str
     role: UserRole

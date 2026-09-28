@@ -1,3 +1,4 @@
+import secrets
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -6,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from models import Users
-from schemas import RegisterUser, TokenResponse
+from schemas import RegisterUser, TokenResponse, VerifyOTP
 from utils.auth import (
     authenticate_user,
     create_access_token,
@@ -15,9 +16,7 @@ from utils.auth import (
     verify_password,
 )
 from utils.email_sending import send_email
-import secrets
 from utils.redis import redis
-from schemas import VerifyOTP
 
 router = APIRouter()
 db_dependency = Annotated[Session, Depends(get_db)]
@@ -190,7 +189,7 @@ def change_password(
     current_password: str,
     new_password: str,
 ):
-    if not verify_password(current_password, user.password):
+    if not user.password or not verify_password(current_password, user.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Current password is incorrect",

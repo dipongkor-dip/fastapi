@@ -10,7 +10,19 @@ A FastAPI-based ambulance management system with JWT authentication, role-based 
 |---|---|---|
 | POST | `/auth/register` | Register a new passenger |
 | POST | `/auth/login` | Login and receive JWT access token |
+| GET | `/auth/google` | Start Google sign-in |
+| GET | `/auth/facebook` | Start Facebook sign-in |
+| POST | `/auth/oauth/exchange` | Exchange a one-time OAuth code for a JWT |
 | GET | `/auth/me` | Get the currently authenticated user |
+
+Google and Facebook sign-in require `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`,
+`FACEBOOK_CLIENT_ID`, and `FACEBOOK_CLIENT_SECRET` in the backend environment.
+Register these callback URLs with the providers:
+
+- `{BACKEND_URL}/api/v1/auth/google/callback`
+- `{BACKEND_URL}/api/v1/auth/facebook/callback`
+
+The backend redirects successful sign-ins to `{FRONTEND_URL}/oauth/callback`.
 
 ### Users
 

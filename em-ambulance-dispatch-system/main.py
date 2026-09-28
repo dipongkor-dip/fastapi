@@ -12,9 +12,11 @@ from router import (
     trips,
     users,
     payments,
+    socialAuth,
 )
 from utils.bootstrap import create_default_superadmin
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 from config import settings
 
 @asynccontextmanager
@@ -27,6 +29,14 @@ app = FastAPI(
     title="Ambulance Management System",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.jwt_secret_key,
+    max_age=600,
+    same_site="lax",
+    https_only=settings.backend_url.startswith("https://"),
 )
 
 origins = ["http://localhost:5173", settings.frontend_url]
@@ -43,6 +53,7 @@ models.Base.metadata.create_all(bind=engine)
 
 # Routers /api/v1
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(socialAuth.router, prefix="/api/v1/auth", tags=["Social Authentication"])
 
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 

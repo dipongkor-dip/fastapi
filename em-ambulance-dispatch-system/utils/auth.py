@@ -29,7 +29,7 @@ def verify_password(plain_password: str, hashed_password: str):
 def authenticate_user(db: Session, username: str, password: str):
     user = db.query(Users).filter(Users.username == username).first()
 
-    if user is None or not user.is_active:
+    if user is None or not user.is_active or not user.password:
         return False
     if not verify_password(password, user.password):
         return False

@@ -29,13 +29,33 @@ class Users(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(100), unique=True, nullable=False, index=True)
-    email = Column(String(255), unique=True, nullable=False, index=True)
+    email = Column(String(255), unique=True, nullable=True, index=True)
     firstname = Column(String(100), nullable=False)
     lastname = Column(String(100), nullable=False)
-    password = Column(String(255), nullable=False)
+    password = Column(String(255), nullable=True)
     role = Column(SQLEnum(UserRole), default=UserRole.PASSENGER, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=utc_now, nullable=False)
+
+
+class GoogleAuth(Base):
+    __tablename__ = "google_auth"
+
+    id = Column(Integer, primary_key=True, index=True)
+    google_id = Column(String(255), unique=True, nullable=False, index=True)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
+    )
+
+
+class FacebookAuth(Base):
+    __tablename__ = "facebook_auth"
+
+    id = Column(Integer, primary_key=True, index=True)
+    facebook_id = Column(String(255), unique=True, nullable=False, index=True)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
+    )
 
 
 class Ambulance(Base):

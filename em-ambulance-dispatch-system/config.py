@@ -27,6 +27,12 @@ class Settings(BaseSettings):
     backend_url: str
     frontend_url: str
 
+    google_client_id: str = ""
+    google_client_secret: str = ""
+    
+    facebook_client_id: str = ""
+    facebook_client_secret: str = ""
+
     # Cloudinary
     cloudinary_cloud_name: str
     cloudinary_api_key: str
