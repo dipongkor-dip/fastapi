@@ -44,3 +44,5 @@ def delete_my_account(user: user_dependency, db: db_dependency):
     user.is_active = False
     db.commit()
     return {"message": "Account deactivated successfully"}
+
+

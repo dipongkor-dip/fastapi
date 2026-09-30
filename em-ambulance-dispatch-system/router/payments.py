@@ -3,11 +3,12 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Request
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 import requests
 
 from database import get_db
-from enums import PaymentStatus, PaymentMethod, TripStatus
+from enums import PaymentStatus, PaymentMethod, TripStatus, UserRole
 from models import Users, Trip, Payment, AmbulanceRequest
 from utils.auth import user_dependency
 from utils.sslcommerz import initiate_payment
@@ -42,6 +43,28 @@ def validate_payment(val_id: str):
     response.raise_for_status()
 
     return response.json()
+
+
+def payment_result_redirect(transaction_id: str) -> RedirectResponse:
+    frontend_url = settings.frontend_url.rstrip("/")
+    return RedirectResponse(
+        f"{frontend_url}/payment/result?transaction_id={transaction_id}",
+        status_code=303,
+    )
+
+
+def serialize_payment(payment: Payment) -> dict:
+    return {
+        "id": payment.id,
+        "trip_id": payment.trip_id,
+        "amount": float(payment.amount),
+        "status": payment.status.value,
+        "payment_method": payment.payment_method.value,
+        "transaction_id": payment.transaction_id,
+        "receipt_url": payment.receipt_url,
+        "created_at": payment.created_at.isoformat(),
+        "paid_at": payment.paid_at.isoformat() if payment.paid_at else None,
+    }
 
 
 @router.post("/create/{id}", summary="Create a payment for a trip")
@@ -247,7 +270,7 @@ async def payment_success(
 
     # Prevent duplicate processing
     if payment.status == PaymentStatus.SUCCESS:
-        return {"message": "Payment already processed"}
+        return payment_result_redirect(payment.transaction_id)
 
     # Get passenger
     passenger = db.query(Users).filter(Users.id == payment.passenger_id).first()
@@ -341,13 +364,7 @@ Ambulance Management System
             repr(e),
         )
 
-    return {
-        "message": "Payment successful",
-        "payment_id": payment.id,
-        "transaction_id": payment.transaction_id,
-        "amount": payment.amount,
-        "receipt_url": payment.receipt_url,
-    }
+    return payment_result_redirect(payment.transaction_id)
 
 
 @router.post("/cancel")
@@ -374,17 +391,13 @@ async def payment_cancel(
         )
 
     if payment.status == PaymentStatus.SUCCESS:
-        return {"message": "Payment has already been completed"}
+        return payment_result_redirect(payment.transaction_id)
 
     payment.status = PaymentStatus.CANCELLED
 
     db.commit()
 
-    return {
-        "message": "Payment cancelled",
-        "payment_id": payment.id,
-        "transaction_id": payment.transaction_id,
-    }
+    return payment_result_redirect(payment.transaction_id)
 
 
 @router.post("/fail")
@@ -411,17 +424,13 @@ async def payment_fail(
         )
 
     if payment.status == PaymentStatus.SUCCESS:
-        return {"message": "Payment already completed"}
+        return payment_result_redirect(payment.transaction_id)
 
     payment.status = PaymentStatus.FAILED
 
     db.commit()
 
-    return {
-        "message": "Payment failed",
-        "payment_id": payment.id,
-        "transaction_id": payment.transaction_id,
-    }
+    return payment_result_redirect(payment.transaction_id)
 
 
 @router.get("/all")
@@ -435,3 +444,48 @@ def get_all_payments(
         "message": "Payments retrieved successfully",
         "payments": payments,
     }
+
+
+@router.get("/my")
+def get_my_payments(
+    db: db_dependency,
+    current_user: user_dependency,
+):
+    payments_query = db.query(Payment)
+
+    if current_user.role == UserRole.PASSENGER:
+        payments_query = payments_query.filter(Payment.passenger_id == current_user.id)
+    elif current_user.role == UserRole.DRIVER:
+        payments_query = payments_query.join(Trip).filter(Trip.driver_id == current_user.id)
+    else:
+        raise HTTPException(
+            status_code=403,
+            detail="Payment history is available to passengers and drivers",
+        )
+
+    payments = payments_query.order_by(Payment.created_at.desc()).all()
+    return {
+        "message": "Payment history retrieved successfully",
+        "payments": [serialize_payment(payment) for payment in payments],
+    }
+
+
+@router.get("/transaction/{transaction_id}")
+def get_payment_by_transaction_id(
+    transaction_id: str,
+    db: db_dependency,
+    current_user: user_dependency,
+):
+    payment = (
+        db.query(Payment)
+        .filter(
+            Payment.transaction_id == transaction_id,
+            Payment.passenger_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment not found")
+
+    return serialize_payment(payment)
