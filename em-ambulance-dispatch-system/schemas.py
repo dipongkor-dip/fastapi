@@ -39,10 +39,23 @@ class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class UsernameAvailabilityResponse(BaseModel):
+    available: bool
+
+
 class UpdateUser(BaseModel):
+    username: str | None = Field(default=None, min_length=3, max_length=100)
     firstname: str | None = None
     lastname: str | None = None
     email: EmailStr | None = None
+
+
+class PasswordStatusResponse(BaseModel):
+    has_password: bool
+
+
+class SetPasswordRequest(BaseModel):
+    new_password: str = Field(min_length=6)
 
 
 # ========================= # DRIVER # =========================

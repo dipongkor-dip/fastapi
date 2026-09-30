@@ -7,7 +7,13 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from models import Users
-from schemas import RegisterUser, TokenResponse, VerifyOTP
+from schemas import (
+    PasswordStatusResponse,
+    RegisterUser,
+    SetPasswordRequest,
+    TokenResponse,
+    VerifyOTP,
+)
 from utils.auth import (
     authenticate_user,
     create_access_token,
@@ -199,3 +205,25 @@ def change_password(
     db.commit()
 
     return {"message": "Password changed successfully"}
+
+
+@router.get("/password-status", response_model=PasswordStatusResponse)
+def get_password_status(user: user_dependency):
+    return {"has_password": user.password is not None}
+
+
+@router.post("/set-password")
+def set_password(
+    data: SetPasswordRequest,
+    user: user_dependency,
+    db: db_dependency,
+):
+    if user.password is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A password is already set. Use change-password instead.",
+        )
+
+    user.password = hash_password(data.new_password)
+    db.commit()
+    return {"message": "Password set successfully"}

@@ -1,10 +1,36 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 
 from models import Users
-from schemas import UpdateUser, UserResponse
+from schemas import UpdateUser, UserResponse, UsernameAvailabilityResponse
 from utils.auth import user_dependency, db_dependency
 
 router = APIRouter()
+
+
+@router.get(
+    "/username-availability", response_model=UsernameAvailabilityResponse
+)
+def check_username_availability(
+    user: user_dependency,
+    db: db_dependency,
+    username: str = Query(..., min_length=3, max_length=100),
+):
+    normalized_username = username.strip()
+    if len(normalized_username) < 3:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Username must contain at least 3 non-whitespace characters",
+        )
+
+    existing_user = (
+        db.query(Users)
+        .filter(
+            Users.username == normalized_username,
+            Users.id != user.id,
+        )
+        .first()
+    )
+    return {"available": existing_user is None}
 
 
 @router.get("/me", response_model=UserResponse)
@@ -18,6 +44,19 @@ def update_profile(
     user: user_dependency,
     db: db_dependency,
 ):
+    if data.username is not None and data.username != user.username:
+        existing_username = (
+            db.query(Users)
+            .filter(Users.username == data.username, Users.id != user.id)
+            .first()
+        )
+        if existing_username:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already exists",
+            )
+        user.username = data.username
+
     if data.email is not None:
         existing = (
             db.query(Users).filter(Users.email == data.email, Users.id != user.id).first()

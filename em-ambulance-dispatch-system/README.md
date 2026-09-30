@@ -126,6 +126,8 @@ All routes below are relative to `/api/v1`.
 | POST | `/auth/verify-otp` | Verify a password reset OTP |
 | POST | `/auth/reset-password` | Reset a password after OTP verification |
 | POST | `/auth/change-password` | Change the authenticated user password |
+| GET | `/auth/password-status` | Check whether the authenticated user has a password |
+| POST | `/auth/set-password` | Set a first password for an account without one |
 | GET | `/auth/google` | Start Google OAuth |
 | GET | `/auth/google/callback` | Handle Google OAuth callback |
 | GET | `/auth/facebook` | Start Facebook OAuth |
@@ -139,8 +141,9 @@ short-lived one-time code.
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
+| GET | `/users/username-availability?username={username}` | Check whether a username can be used by the authenticated user |
 | GET | `/users/me` | Get the authenticated user profile |
-| PUT | `/users/me` | Update the authenticated user profile |
+| PUT | `/users/me` | Update username, name, and email for the authenticated user |
 | DELETE | `/users/me` | Deactivate the authenticated account |
 
 ### Admin
