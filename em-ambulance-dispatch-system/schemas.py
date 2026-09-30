@@ -87,6 +87,14 @@ class AmbulanceResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class PaginatedAmbulanceResponse(BaseModel):
+    items: list[AmbulanceResponse]
+    total: int
+    page: int
+    page_size: int
+    pages: int
+
+
 # ========================= # AMBULANCE REQUEST # =========================
 class CreateAmbulanceRequest(BaseModel):
     pickup_location: str

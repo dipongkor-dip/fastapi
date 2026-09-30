@@ -49,8 +49,7 @@ The backend redirects successful sign-ins to `{FRONTEND_URL}/oauth/callback`.
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/ambulances/` | Get all ambulances |
-| GET | `/ambulances/available` | Get available ambulances |
+| GET | `/ambulances/?page=1&page_size=12` (optional `status` and `search`) | Get a page of ambulances with total/page metadata; filter by status or search unit, type, and model |
 | GET | `/ambulances/{ambulance_id}` | Get a specific ambulance |
 | GET | `/ambulances/my/ambulance` | Get the driver's assigned ambulance |
 | PUT | `/ambulances/my/ambulance/status` | Update assigned ambulance status |
