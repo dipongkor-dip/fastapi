@@ -16,6 +16,7 @@ from router import (
 )
 from utils.bootstrap import create_default_superadmin
 from fastapi.middleware.cors import CORSMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from config import settings
 
@@ -30,6 +31,9 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+# 1. Trust proxy headers so FastAPI knows it's running on HTTPS when deployed
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=["*"])
 
 app.add_middleware(
     SessionMiddleware,
